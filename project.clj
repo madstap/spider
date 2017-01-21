@@ -1,10 +1,10 @@
 (defproject spider "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "The arachne introduction tutorials."
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
-                 [org.arachne-framework/arachne-core "0.1.0-master-0081-0ab2073"]
+                 [org.arachne-framework/arachne-pedestal "0.1.0-master-0036-59ecd65"]
                  [datascript "0.15.5"]
                  [ch.qos.logback/logback-classic "1.1.3"]]
   :repositories [["arachne-dev"
