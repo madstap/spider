@@ -8,4 +8,5 @@
                  [datascript "0.15.5"]
                  [ch.qos.logback/logback-classic "1.1.3"]]
   :repositories [["arachne-dev"
-                  "http://maven.arachne-framework.org/artifactory/arachne-dev"]])
+                  "http://maven.arachne-framework.org/artifactory/arachne-dev"]]
+  :main arachne.run)

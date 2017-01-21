@@ -11,3 +11,6 @@
   (stop [this]
     (log/info :msg "Goodnight!")
     this))
+
+(defn make-widget []
+  (->Widget))
