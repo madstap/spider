@@ -3,15 +3,29 @@
    [arachne.core :as arachne]
    [com.stuartsierra.component :as c]))
 
-(def cfg (arachne/config :spider/app))
+(def rt "An atom that holds the current runtime." (atom nil))
 
-(def rt (arachne/runtime cfg :spider/runtime))
+(defn make-rt
+  "Create a runtime."
+  []
+  (-> (arachne/config :spider/app) (arachne/runtime :spider/runtime)))
 
-(def started-rt (c/start rt))
+(defn start!
+  "Put the runtime created by create-rt into the rt atom and start it."
+  []
+  (reset! rt (make-rt))
+  (swap! rt c/start))
+
+(defn reload!
+  "Stops the existing runtime, if any, rebuilds the config and makes a new runtime.
+  Use when you've edited the config or changed a protocol or record."
+  []
+  (when @rt (swap! rt c/stop))
+  (start!))
 
 (comment
 
-  (c/stop started-rt)
+  (reload!)
 
   (arachne.error/explain)
 
