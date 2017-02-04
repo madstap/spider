@@ -4,10 +4,8 @@
 
 (defn p< [x] (prn x) x)
 
-(a/component :spider/widget-1 'spider.core/make-widget)
 
 (a/runtime :spider/runtime [:spider/server])
-
 
 (http/handler :spider/hello 'spider.core/hello-handler)
 

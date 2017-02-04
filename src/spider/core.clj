@@ -3,19 +3,8 @@
    [com.stuartsierra.component :as c]
    [arachne.log :as log]))
 
-(defrecord Widget []
-  c/Lifecycle
-  (start [this]
-    (log/info :msg "Hello, world!")
-    this)
-  (stop [this]
-    (log/info :msg "Goodnight!")
-    this))
 
-(defn make-widget []
-  (->Widget))
 
-(defn one? [x] (== 1 x))
 
 (defn hello-handler [req]
   {:status 200
