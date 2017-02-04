@@ -13,9 +13,7 @@
 (defn greet-handler [{:keys [path-params] :as req}]
   (let [{:keys [name]} path-params]
     {:status 200
-     :body (if (empty? name)
-             "Who's there?"
-             (str "Hello, " name "!"))}))
+     :body (str "Hello, " name "!")}))
 
 (defn echo-handler [{:keys [path-params] :as req}]
   {:status 200
