@@ -1,9 +1,11 @@
 (ns spider.core
   (:require
-   [com.stuartsierra.component :as c]
+   [com.stuartsierra.component :as component]
    [arachne.log :as log])
   (:import
-   (java.net URL)))
+   (java.net URL)
+   (java.io ByteArrayInputStream)
+   (org.apache.commons.io IOUtils)))
 
 (defprotocol VisualHash
   (vhash [this s] "Given a string, returns an image (as an InputStream)"))
@@ -13,6 +15,24 @@
   (vhash [this s]
     (let [url (URL. (str "https://robohash.org/" s))]
       (.openStream url))))
+
+(defrecord CachingVisualHash [delegate cache]
+  component/Lifecycle
+  (start [this]
+    (assoc this :cache (atom {})))
+  (stop [this]
+    (dissoc this :cache))
+  VisualHash
+  (vhash [this k]
+    (if-let [bytes (get @cache k)]
+      (ByteArrayInputStream. bytes)
+      (let [bytes (IOUtils/toByteArray (vhash delegate k))]
+        (log/info :msg "Cachingvisualhash cache miss" :key k)
+        (swap! cache assoc k bytes)
+        (ByteArrayInputStream. bytes)))))
+
+(defn new-caching-visual-hash []
+  (map->CachingVisualHash {}))
 
 (defn new-robohash []
   (->RoboHash))
