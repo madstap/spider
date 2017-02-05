@@ -4,6 +4,7 @@
 
 (defn p< [x] (prn x) x)
 
+(a/component :spider/robohash 'spider.core/new-robohash)
 
 (a/runtime :spider/runtime [:spider/server])
 
@@ -25,6 +26,9 @@
   (http/endpoint :get "/greet/:name" :spider/greet)
 
   (http/endpoint :get "/echo/:x" :spider/echo)
+
+  (http/endpoint :get "/robot/:name" (http/handler 'spider.core/robot
+                                                   {:hash-component :spider/robohash}))
 
   ;; Using the returned eid instead of an arachne id.
   #_(http/endpoint :get "/greet/:name" greet-eid)
