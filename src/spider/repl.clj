@@ -3,7 +3,7 @@
    [arachne.core :as arachne]
    [com.stuartsierra.component :as c]))
 
-(def rt "An atom that holds the current runtime." (atom nil))
+(defonce rt ^{:doc "An atom that holds the current runtime."} (atom nil))
 
 (defn make-rt
   "Create a runtime."
