@@ -4,10 +4,12 @@
 
 (defn p< [x] (prn x) x)
 
-(a/component :spider/widget-1 'spider.core/make-widget)
+(a/component :spider/robohash 'spider.core/new-robohash)
+
+(a/component :spider/cached-robohash 'spider.core/new-caching-visual-hash
+             {:delegate :spider/robohash})
 
 (a/runtime :spider/runtime [:spider/server])
-
 
 (http/handler :spider/hello 'spider.core/hello-handler)
 
@@ -27,6 +29,10 @@
   (http/endpoint :get "/greet/:name" :spider/greet)
 
   (http/endpoint :get "/echo/:x" :spider/echo)
+
+  (http/endpoint :get "/robot/:name"
+                 (http/handler 'spider.core/robot
+                               {:hash-component :spider/cached-robohash}))
 
   ;; Using the returned eid instead of an arachne id.
   #_(http/endpoint :get "/greet/:name" greet-eid)

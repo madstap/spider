@@ -1,21 +1,46 @@
 (ns spider.core
   (:require
-   [com.stuartsierra.component :as c]
-   [arachne.log :as log]))
+   [com.stuartsierra.component :as component]
+   [arachne.log :as log])
+  (:import
+   (java.net URL)
+   (java.io ByteArrayInputStream)
+   (org.apache.commons.io IOUtils)))
 
-(defrecord Widget []
-  c/Lifecycle
+(defprotocol VisualHash
+  (vhash [this s] "Given a string, returns an image (as an InputStream)"))
+
+(defrecord RoboHash []
+  VisualHash
+  (vhash [this s]
+    (let [url (URL. (str "https://robohash.org/" s))]
+      (.openStream url))))
+
+(defrecord CachingVisualHash [delegate cache]
+  component/Lifecycle
   (start [this]
-    (log/info :msg "Hello, world!")
-    this)
+    (assoc this :cache (atom {})))
   (stop [this]
-    (log/info :msg "Goodnight!")
-    this))
+    (dissoc this :cache))
+  VisualHash
+  (vhash [this k]
+    (if-let [bytes (get @cache k)]
+      (ByteArrayInputStream. bytes)
+      (let [bytes (IOUtils/toByteArray (vhash delegate k))]
+        (log/info :msg "Cachingvisualhash cache miss" :key k)
+        (swap! cache assoc k bytes)
+        (ByteArrayInputStream. bytes)))))
 
-(defn make-widget []
-  (->Widget))
+(defn new-caching-visual-hash []
+  (map->CachingVisualHash {}))
 
-(defn one? [x] (== 1 x))
+(defn new-robohash []
+  (->RoboHash))
+
+(defn robot [{:keys [path-params hash-component] :as req}]
+  {:status 200
+   :headers {"Content-Type" "image/png"}
+   :body (vhash hash-component (:name path-params))})
 
 (defn hello-handler [req]
   {:status 200
@@ -24,9 +49,7 @@
 (defn greet-handler [{:keys [path-params] :as req}]
   (let [{:keys [name]} path-params]
     {:status 200
-     :body (if (empty? name)
-             "Who's there?"
-             (str "Hello, " name "!"))}))
+     :body (str "Hello, " name "!")}))
 
 (defn echo-handler [{:keys [path-params] :as req}]
   {:status 200

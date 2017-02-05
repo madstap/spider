@@ -3,7 +3,7 @@
    [arachne.core :as arachne]
    [com.stuartsierra.component :as c]))
 
-(def rt "An atom that holds the current runtime." (atom nil))
+(defonce rt ^{:doc "An atom that holds the current runtime."} (atom nil))
 
 (defn make-rt
   "Create a runtime."
@@ -13,19 +13,30 @@
 (defn start!
   "Put the runtime created by create-rt into the rt atom and start it."
   []
+  (assert (not @rt) "There's already an active runtime.")
   (reset! rt (make-rt))
   (swap! rt c/start))
+
+(defn stop! []
+  (swap! rt c/stop))
 
 (defn reload!
   "Stops the existing runtime, if any, rebuilds the config and makes a new runtime.
   Use when you've edited the config or changed a protocol or record."
   []
   (when @rt (swap! rt c/stop))
-  (start!))
+  (reset! rt (make-rt))
+  (swap! rt c/start))
 
 (comment
 
+  (start!)
+
+  (stop!)
+
   (reload!)
+
+  rt
 
   (arachne.error/explain)
 
